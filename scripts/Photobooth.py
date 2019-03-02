@@ -72,7 +72,6 @@ class Photobooth:
         pygame.display.flip()
         
     
-    ##IMPORTANT STOP PUTTING DEFS HERE##
     def on_execute(self):
         if(debug == True):
             print("Running on_execute")
@@ -86,8 +85,7 @@ class Photobooth:
             self.on_loop()
             self.on_render()
         self.on_cleanup()
-    ##END IMPORTANT AREA##
-##END CLASS##
+
     
 #Method to set display text
 def setMessage(state):
