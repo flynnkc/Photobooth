@@ -2,6 +2,8 @@ from time import sleep
 import board
 import neopixel
 
+debug = True
+
 class LED:
     def __init__(self):
         #GLOBAL VARIABLES
@@ -17,6 +19,7 @@ class LED:
         #Create NeoPixel object
         self.pixels = neopixel.NeoPixel(self.pixel_pin, self.num_pixels, brightness=1.0, auto_write=False, pixel_order=self.ORDER)
         
+        #Colorwheel Iteration Control
         self.j = 0
 
 
@@ -38,6 +41,8 @@ class LED:
         
     def cleanup(self):
         self.pixels.deinit()
+        if(debug == True):
+            print("LED Cleaned up")
         
 
     def wheel(self, pos):
@@ -74,10 +79,17 @@ class LED:
             
     def colorWheel(self):
         self.pixels.brightness = 0.2
-        self.rainbow_cycle(0.01) # rainbow cycle with 10ms delay per step
+        self.rainbow_cycle(0.001) # rainbow cycle with 1ms delay per step
             
+            
+######################################################################################
+#                                                                                    #
+# Running this file will cause colorwheel to run briefly and then turn off all LEDs. #
+# This is handy as if something goes wrong there is a good chance that the LEDs will #
+#                          become "stuck" in the on position.                        #
+######################################################################################
 if __name__ == "__main__":
     led = LED()
-    for i in range(255):
-        led.colorWheel()
+    led.flash_on()
+    sleep(1)
     led.flash_off()

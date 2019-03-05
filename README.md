@@ -2,6 +2,8 @@ These scripts have been written so that I can use them as a photo booth for my w
 
 This is a work in progress and subject to change frequently. Not all features that I would like to add are present or working. I'm a student so this is just something I've been doing in my free time.
 
+Credit to Irina Iriser for open licence background image.
+
 Libraries Used:
 - Picamera
 - Datetime
