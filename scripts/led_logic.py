@@ -79,7 +79,7 @@ class LED:
             
     def colorWheel(self):
         self.pixels.brightness = 0.2
-        self.rainbow_cycle(0.001) # rainbow cycle with 1ms delay per step
+        self.rainbow_cycle(0.1) # rainbow cycle with 100ms delay per step
             
             
 ######################################################################################
@@ -87,7 +87,9 @@ class LED:
 # Running this file will cause colorwheel to run briefly and then turn off all LEDs. #
 # This is handy as if something goes wrong there is a good chance that the LEDs will #
 #                          become "stuck" in the on position.                        #
+#                                                                                    #
 ######################################################################################
+
 if __name__ == "__main__":
     led = LED()
     led.flash_on()

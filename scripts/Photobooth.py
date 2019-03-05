@@ -8,24 +8,24 @@ import RPi.GPIO as GPIO
 
 #GLOBAL VARIABLES
 debug = True
-white = [255, 255, 255]
-red = [255, 0, 0]
-green = [0, 255, 0]
-blue = [0, 0, 255]
 
 class Photobooth:
-    # Init Photobooth object, LED object, Camera object, and pygame
+    # Init Photobooth object, LED object, and Camera object
     def __init__(self):
         if(debug == True):
             print("Running init")
         self._running = True
+        self._idle = False
         self.led = LED()
         self.camera = Camera()
-        pygame.init()
         
         
-    # Get information about display, set display surface size, set display to fullscreen, and initalize GPIO pins for LEDs and arcade button
+        
+    # Initialize pygame, get information about display, set display surface size, set display to fullscreen, and initalize GPIO pins for LEDs and arcade button
     def on_init(self):
+        if(debug == True):
+            print('Running on_init')
+        pygame.init()
         self.displayInfo = pygame.display.Info()
         self._display_surf = pygame.display.set_mode((self.displayInfo.current_w, self.displayInfo.current_h), pygame.FULLSCREEN)
         pygame.mouse.set_visible(False) #hide the mouse cursor
@@ -42,16 +42,23 @@ class Photobooth:
         elif event.type == pygame.KEYDOWN:
             self._running = False
             
-            
+    # Loop events not related to display        
     def on_loop(self):
+        
+        for event in pygame.event.get(): #Pygame event detection
+            self.on_event(event)
+            
+        if GPIO.event_detected(15): #Run gpio event since last loop
+            self.buttonPress()
         self.led.colorWheel()
         
             
-    
+    # Display rendering
     def on_render(self):
-        self.set_Message('Idle')
+        if self._idle is False:
+            self.set_Message('Idle')
         
-    
+    # Stop processes, turn off LEDs, stop camera from using power
     def on_cleanup(self):
         self.led.cleanup()
         self.camera.cleanup()
@@ -74,7 +81,7 @@ class Photobooth:
         self.set_Message('Pressed')
         self.photos = self.camera.pointShoot(self.led)
         self.draw_Surface(photographs=self.photos)
-        sleep(5)
+        sleep(10)
 
         # Restore event detection once main function is complete
         GPIO.add_event_detect(15, GPIO.RISING, bouncetime=5)
@@ -84,12 +91,13 @@ class Photobooth:
         # Test for state and send to create display
         if(state == 'Idle'):
             message = 'Please press button to begin countdown'
+            self._idle = True
         elif(state == 'Pressed'):
             message = 'Please wait...'
-        elif(state == 'Button'):
-            message = "Button pressed"
+            self._idle = False
         elif(state == 'Blank'):
             message = None
+            self._idle = False
         else:
             message = 'Something went wrong setting message'
             
@@ -129,12 +137,10 @@ class Photobooth:
         if self.on_init() == False:
             self._running = False
             
-        #Main Loop
+        # Main Loop
+        if(debug == True):
+            print("Starting main loop")
         while(self._running):
-            for event in pygame.event.get(): #Pygame event detection
-                self.on_event(event)
-            if GPIO.event_detected(15): #Run gpio event since last loop
-                self.buttonPress()
             self.on_loop()
             self.on_render()
         self.on_cleanup()
