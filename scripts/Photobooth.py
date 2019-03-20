@@ -79,7 +79,7 @@ class Photobooth:
         GPIO.remove_event_detect(15)
         
         self.set_Message('Pressed')
-        self.photos = self.camera.pointShoot(self.led)
+        self.photos = self.camera.pointShoot(self.led) # Runs camera method to take photo series, returns absolute filenames in list structure
         self.draw_Surface(photographs=self.photos)
         sleep(10)
 
@@ -134,8 +134,8 @@ class Photobooth:
     def on_execute(self):
         if(debug == True):
             print("Running on_execute")
-        if self.on_init() == False:
-            self._running = False
+        self.on_init()
+            #self._running = False
             
         # Main Loop
         if(debug == True):
