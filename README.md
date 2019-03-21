@@ -4,16 +4,17 @@ This is a work in progress and subject to change frequently. Not all features th
 
 Credit to Irina Iriser for open licence background image.
 
+Environment: Python 3.5.3
+
 Libraries Used:
-- Picamera
-- Datetime
-- Time
-- Traceback
-- OS
-- Neopixel
-- Board
-- Pygame
-- RPi GPIO
+- Adafruit-Blinka==1.1.0
+- adafruit-circuitpython-neopixel==3.3.4
+- Adafruit-PlatformDetect==0.0.9
+- Adafruit-PureIO==0.2.3
+- picamera==1.13
+- pygame==1.9.3
+- RPi.GPIO==0.6.5
+- rpi-ws281x==4.1.0
 
 Hardware Used:
 - Raspberry Pi 3 B+
@@ -24,6 +25,13 @@ Hardware Used:
 - 5V 2A Power Supply
 - Halfsize breadboard
 
+For Raspberry Pi setup see https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi
+For wiring see https://learn.adafruit.com/assets/64121
+If attempting to test scripts remotely without HDMI connected, onboard RPi audio must be turned off or conflict with rpi_ws281x lib:
+    - Create /etc/modprobe.d/snd-blacklist.conf and add "blacklist snd_bcm2835"
+    - In /boot/config.txt add:
+        hdmi_force_hotplug=1
+        hdmi_force_edid_audio=1
 
 Thanks,
 KC Flynn

@@ -12,18 +12,20 @@ import os
 
 debug = True
 
-#Method to take picture
-#Parameters:
-#camera (PiCamera) :: Camera object
-#res1 (int) :: Width of image capture (Does not affect preview resolution) :: max 2592
-#res2 (int) :: Height of image capture (Does not affect preview resolution) :: max 1944
-#currentTime (str) :: capture of current time using datetime library :: default %m_%d_%Y_%H_%M_%S
-#i (int) :: Iteration of photo since datetime is only taken once when run in for loop :: default 0
-#folder (str) :: Folder where pictures will be saved
-#saveAs (str) :: Complete filepath and filename of image
+
 
 class Camera(PiCamera):
     
+
+    ### Camera.takePhoto is called by Camera.pointShoot to capture and name image files/folder. Returns image filename. ###
+    # Parameters:
+    # res1 (int) :: Width of image capture (Does not affect preview resolution) :: max 2592
+    # res2 (int) :: Height of image capture (Does not affect preview resolution) :: max 1944
+    # currentTime (str) :: capture of current time using datetime library :: default %m_%d_%Y_%H_%M_%S
+    # i (int) :: Iteration of photo since datetime is only taken once when run in for loop :: default 0
+    # folder (str) :: Folder where pictures will be saved
+    # saveAs (str) :: Complete filepath and filename of image
+
     def takePhoto(self, res1, res2, i = 0, currentTime = datetime.now().strftime("%m_%d_%Y_%H_%M_%S-")):
         try:
             # Parse folder info and image filename
@@ -51,19 +53,24 @@ class Camera(PiCamera):
                 traceback.print_exc()
             
 
-    #Point and Shoot method to create countdown overlay then take picture 3 times
-    #imgW (int) :: Width of image in pixels :: Default 1920
-    #imgH (int) :: Height of image in pixels :: Default 1080
+
+    ### Point and Shoot method to create countdown overlay then call Camera.takePhoto three times to capture images. Returns list of filenames. ###
+    # Parameters:
+    # led (LED) :: LED object created in Photobooth script
+    # imgW (int) :: Width of image in pixels :: Default 1920
+    # imgH (int) :: Height of image in pixels :: Default 1080
             
     def pointShoot(self, led, imgW = 1920, imgH = 1080):
         try:
             filenames = [] # List to store image filenames
             if(debug == True):
                 print("Begin pointShoot")
+            #Turn off led lights since LED.colorWheel most likely running up to this point
             led.flash_off()
             
             #loop to take a series of 3 pictures
             for x in range(1,4):
+                #Paste preview display on top of UI
                 self.start_preview()
                 self.annotate_text_size = 160 #max value 160 default 32
                 
@@ -88,8 +95,10 @@ class Camera(PiCamera):
                 
                 if(debug == True):
                     print("Taking photo " + str(x) + "/3")
-                filenames.append(self.takePhoto(imgW, imgH, i = x)) # Take photo and add filename to list
+                    #Call Camera.takePhoto to capture image and return filename, then add filename to filenames list
+                filenames.append(self.takePhoto(imgW, imgH, i = x))
                 led.flash_off()
+            #Finally return filenames list for display
             return filenames
         
         except:
@@ -100,7 +109,7 @@ class Camera(PiCamera):
         finally:
             self.stop_preview()
             
-    #Add Documentation Here
+    # Call Camera.close to free memory on cleanup
     def cleanup(self):
         self.close()
         if(debug == True):

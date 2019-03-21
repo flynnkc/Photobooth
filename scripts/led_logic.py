@@ -5,8 +5,9 @@ import neopixel
 debug = True
 
 class LED:
+
     def __init__(self):
-        #GLOBAL VARIABLES
+
         #Raspberry Pi data pin
         self.pixel_pin = board.D18
 
@@ -17,34 +18,39 @@ class LED:
         self.ORDER = neopixel.RGBW
         
         #Create NeoPixel object
+        #If auto_write=False then changes to brightness or color will not display until show() is called
         self.pixels = neopixel.NeoPixel(self.pixel_pin, self.num_pixels, brightness=1.0, auto_write=False, pixel_order=self.ORDER)
         
         #Colorwheel Iteration Control
         self.j = 0
 
 
-    #Turn on flash
+    # Turn on flash
     def flash_on(self):
         self.pixels.brightness = 1.0
-        self.pixels.fill((0, 0, 0, 255))
+        self.pixels.fill((0, 0, 0, 255)) # RGBW tuple
         self.pixels.show()
 
-    #Turn off flash
+    # Turn off flash
     def flash_off(self):
         self.pixels.brightness = 0
-        self.pixels.fill((0, 0, 0, 0))
+        self.pixels.fill((0, 0, 0, 0)) # RGBW tuple
         self.pixels.show()
-        
+    
+    # Custom color fill, not currently in use
     def led_fill(self, r, g, b, w):
         self.pixels.fill((r, g, b, w))
         self.pixels.show()
         
+    # Clear memory on cleanup
     def cleanup(self):
         self.pixels.deinit()
         if(debug == True):
             print("LED Cleaned up")
         
 
+    # Wheel logic via Adafruit and kattni
+    # https://github.com/adafruit/Adafruit_CircuitPython_NeoPixel/blob/master/examples/rpi_neopixel_simpletest.py
     def wheel(self, pos):
         # Input a value 0 to 255 to get a color value.
         # The colours are a transition r - g - b - back to r.
@@ -66,8 +72,8 @@ class LED:
             b = int(255 - pos*3)
         return (r, g, b, 0)
 
+    ### Modified Adafruit method. Added iterator (j) to track method progress of LEDs. ###
     def rainbow_cycle(self, wait):
-        #for j in range(255):
         if(self.j > 254):
             self.j = 0
         for i in range(self.num_pixels):
@@ -77,8 +83,9 @@ class LED:
         self.pixels.show()
         sleep(wait)
             
+    ### Method called from Photobooth, ensures LEDs are not full bright and wheel does not spin too fast. ###
     def colorWheel(self):
-        self.pixels.brightness = 0.2
+        self.pixels.brightness = 0.2 # Decrease pixels brightness before running rainbow_cycle
         self.rainbow_cycle(0.1) # rainbow cycle with 100ms delay per step
             
             
